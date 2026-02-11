@@ -1,0 +1,10 @@
+.vscode
+bin
+so
+tmp
+build
+logs
+*.log
+*.o
+*.so
+*.a

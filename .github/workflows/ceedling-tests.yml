@@ -1,0 +1,40 @@
+name: C CI
+
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Verify GCC version
+      run: gcc --version
+
+    - name: Set up ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.2'
+
+    - name: Install Ceedling
+      run: gem install ceedling
+
+    - name: Create test log directory
+      run: mkdir -p logs
+
+    - name: Install collection dependency
+      run: |
+        git clone https://github.com/derialdavi/collection.git
+        cd collection
+        sudo make install
+
+    - name: Run Ceedling test
+      run: |
+        mkdir -p test/support
+        ceedling test:all
