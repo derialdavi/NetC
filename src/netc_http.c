@@ -68,9 +68,14 @@ http_request *http_request_parse(const char *raw_request)
     while (line_start < headers_end)
     {
         const char *line_end = strstr(line_start, "\r\n");
-        if (line_end == NULL) return NULL;
+        if (line_end == NULL || line_end > headers_end)
+        {
+            hashtable_destroy(request->headers);
+            free(request);
+            return NULL;
+        }
 
-        char key[256], value[256];
+        char key[256] = { 0 }, value[256] = { 0 };
         if (sscanf(line_start, "%255[^:]: %255[^\r\n]", key, value) != 2)
         {
             hashtable_destroy(request->headers);
@@ -135,7 +140,6 @@ bool http_response_default(http_response *response)
     if (response->headers == NULL) return false;
 
     hashtable_put(response->headers, "Server", strlen("Server") + 1, "NetC", strlen("NetC") + 1);
-    hashtable_put(response->headers, "Connection", strlen("Connection") + 1, "Close", strlen("Close") + 1);
 
     response->body = NULL;
     return true;
@@ -167,16 +171,15 @@ bool http_response_add_body(http_response *response, const char *body)
     if (response == NULL || body == NULL)
         return false;
 
-    size_t content_length = strlen(body) + 1;
-    response->body = malloc(content_length);
+    size_t content_length = strlen(body);
+    response->body = malloc(content_length + 1);
     if (response->body == NULL) return false;
 
-    strncpy(response->body, body, content_length - 1);
-    response->body[content_length - 1] = '\0';
+    strcpy(response->body, body);
 
     char content_length_str[20];
     snprintf(content_length_str, sizeof(content_length_str), "%zu", content_length);
-    return hashtable_put(response->headers, "Content-Length", strlen("Content-Length") + 1, content_length_str, strlen(content_length_str));
+    return hashtable_put(response->headers, "Content-Length", strlen("Content-Length") + 1, content_length_str, strlen(content_length_str) + 1);
 }
 
 char *http_response_to_string(const http_response *response)
@@ -198,6 +201,7 @@ char *http_response_to_string(const http_response *response)
         int written = snprintf(response_string + offset, 1024 - offset, "%s: %s\r\n", keys[i], value);
         if (written < 0) return NULL;
         offset += written;
+        free(value);
     }
     free(keys);
 
