@@ -32,9 +32,9 @@ void test_ctsl_NonNullArgumentShouldOpenFileAndWrite(void)
     ctsl logger;
     ctsl_init(&logger, "logs/test.log");
 
-    ctsl_print(&logger, INFO, "This is an info message");
-    ctsl_print(&logger, WARNING, "This is a warning message");
-    ctsl_print(&logger, ERROR, "This is an error message");
+    ctsl_print(&logger, CTSL_INFO, "This is an info message");
+    ctsl_print(&logger, CTSL_WARNING, "This is a warning message");
+    ctsl_print(&logger, CTSL_ERROR, "This is an error message");
 
     ctsl_destroy(&logger);
 

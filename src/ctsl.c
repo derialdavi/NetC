@@ -20,7 +20,7 @@ bool ctsl_init(ctsl *logger, const char *filename)
     {
         logger->fd = STDOUT_FILENO;
         logger->is_terminal = true;
-        return false;
+        return true;
     }
 
     int file_fd = open(filename, O_WRONLY | O_CREAT | O_APPEND, 0644);

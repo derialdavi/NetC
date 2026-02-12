@@ -3,9 +3,9 @@
 
 #include <pthread.h>
 
-#define INFO    "INFO"
-#define WARNING "WARNING"
-#define ERROR   "ERROR"
+#define CTSL_INFO    "INFO"
+#define CTSL_WARNING "WARNING"
+#define CTSL_ERROR   "ERROR"
 
 #define COLOR_ERROR   "\033[37;41m"
 #define COLOR_WARNING "\033[30;43m"
