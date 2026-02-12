@@ -24,7 +24,7 @@ void *endpoint_default_middleware(void *context);
 
 netc server;
 
-void netc_setup(const uint16_t port, const char *log_filename)
+void netc_setup(const uint16_t port, const char *log_filename, const size_t thread_num)
 {
     if (ctsl_init(&server.logger, log_filename) == false)
     {
@@ -64,7 +64,7 @@ void netc_setup(const uint16_t port, const char *log_filename)
         ctsl_destroy(&server.logger);
         exit(EXIT_FAILURE);
     }
-    server.threadpool = threadpool_create(10);
+    server.threadpool = threadpool_create(thread_num);
     if (server.threadpool == NULL)
     {
         char *err_msg = strerror(errno);
@@ -195,7 +195,7 @@ void netc_destroy(void)
     close(server.linstening_socket_fd);
     threadpool_destroy(server.threadpool, true);
     hashtable_destroy(server.endpoint_map);
-    ctsl_print(&server.logger, CTSL_INFO, "Closing server...");
+    ctsl_print(&server.logger, CTSL_WARNING, "Closing server...");
     ctsl_destroy(&server.logger);
 }
 
@@ -290,6 +290,7 @@ void *endpoint_default_middleware(void *context)
 void netc_shutdown_signal_handler(int sig)
 {
     (void)sig;
+    puts("");
     netc_destroy();
     exit(EXIT_SUCCESS);
 }

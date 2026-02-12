@@ -8,3 +8,6 @@ logs
 *.o
 *.so
 *.a
+*.out
+*.http
+*.sh

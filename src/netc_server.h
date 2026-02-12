@@ -20,7 +20,7 @@ typedef struct
     threadpool *threadpool;
 } netc;
 
-void netc_setup(const uint16_t port, const char *log_filename);
+void netc_setup(const uint16_t port, const char *log_filename, const size_t thread_num);
 
 bool netc_add_endpoint(const char *method, const char *path,
                        void *(*endpoint_handler)(http_request*, http_response*));
