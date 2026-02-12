@@ -120,10 +120,6 @@ void test_netc_http_ShouldBuildValidDefaultResponse(void)
     TEST_ASSERT_NOT_NULL(header_value);
     TEST_ASSERT_EQUAL_STRING("NetC", header_value);
     free(header_value);
-    header_value = hashtable_get(response.headers, "Connection");
-    TEST_ASSERT_NOT_NULL(header_value);
-    TEST_ASSERT_EQUAL_STRING("Close", header_value);
-    free(header_value);
 
     TEST_ASSERT_NULL(response.body);
 
@@ -147,10 +143,10 @@ void test_netc_http_response_set_status_ShouldOnlyChangeStatus(void)
     TEST_ASSERT_EQUAL_UINT16(HTTP_STATUS_NOT_FOUND, response.status_code);
     TEST_ASSERT_EQUAL_STRING("Not found", response.status_text);
 
-    char *expected_headers[] = { "Connection", "Server" };
+    char *expected_headers[] = { "Server" };
     char **headers = (char**) hashtable_keyset(response.headers);
-    TEST_ASSERT_EQUAL_STRING_ARRAY(expected_headers, headers, 2);
-    TEST_ASSERT_NULL(headers[2]);
+    TEST_ASSERT_EQUAL_STRING_ARRAY(expected_headers, headers, 1);
+    TEST_ASSERT_NULL(headers[1]);
     free(headers);
 
     http_response_free(&response);
@@ -182,10 +178,10 @@ void test_netc_http_response_add_header_ShouldOnlyAddHeader(void)
     TEST_ASSERT_EQUAL_UINT16(HTTP_STATUS_OK, response.status_code);
     TEST_ASSERT_EQUAL_STRING("OK", response.status_text);
 
-    char *expected_headers[] = { "Connection", "Authorization", "Server" };
+    char *expected_headers[] = { "Authorization", "Server" };
     char **headers = (char**) hashtable_keyset(response.headers);
-    TEST_ASSERT_EQUAL_STRING_ARRAY(expected_headers, headers, 3);
-    TEST_ASSERT_NULL(headers[3]);
+    TEST_ASSERT_EQUAL_STRING_ARRAY(expected_headers, headers, 2);
+    TEST_ASSERT_NULL(headers[2]);
     free(headers);
 
     TEST_ASSERT_NULL(response.body);
@@ -218,10 +214,10 @@ void test_netc_http_response_add_body_ShouldAddBodyAndContentLengthHeader(void)
     TEST_ASSERT_NOT_NULL(response.body);
     TEST_ASSERT_EQUAL_STRING("This is a beautiful body!", response.body);
 
-    char *expected_headers[] = { "Connection", "Server", "Content-Length" };
+    char *expected_headers[] = { "Server", "Content-Length" };
     char **headers = (char**) hashtable_keyset(response.headers);
-    TEST_ASSERT_EQUAL_STRING_ARRAY(expected_headers, headers, 3);
-    TEST_ASSERT_NULL(headers[3]);
+    TEST_ASSERT_EQUAL_STRING_ARRAY(expected_headers, headers, 2);
+    TEST_ASSERT_NULL(headers[2]);
     free(headers);
 
     http_response_free(&response);
@@ -244,10 +240,9 @@ void test_netc_http_response_to_string_ShouldReturnValidHttpResponseString(void)
 
     const char *expected_response =
         "HTTP/1.1 200 OK\r\n"
-        "Connection: Close\r\n"
         "X-Custom-Header: CustomValue\r\n"
         "Server: NetC\r\n"
-        "Content-Length: 17\r\n"
+        "Content-Length: 16\r\n"
         "\r\n"
         "This is the body";
 
